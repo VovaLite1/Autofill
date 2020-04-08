@@ -1,0 +1,157 @@
+// подключаем модуль датчика уровня воды
+var level = require('@amperka/water-level');
+
+var hyst = require('@amperka/hysteresis')
+  .create({high: 0.04, highLag: 0.4, low: 0.01, lowLag: 0.001});
+// подключаем датчик на дне бочки
+var onBottom = level.connect(B10, {debounce: 3});
+// подключаем датчик на крышке бочки
+var onTop = level.connect(B3, {debounce: 3});
+// подключаем реле
+var pump = require('@amperka/relay').connect(B5);
+
+var led = require('@amperka/led').connect(B4);
+
+var buzzer = require('@amperka/buzzer').connect(B6);
+
+var myButton = require('@amperka/button')
+  .connect(B13);
+
+
+
+var time = 0;
+
+var srok = 90; 
+
+var time1 = 0;
+
+var srok1 = 110;
+
+var yesoff;
+
+var yesy = 0;
+var loe = function() {
+};
+var logi = function() {
+  // включаем насоc
+    if ( time > srok){
+     // сonsole.log("stay home");
+                  pump.turnOff();
+   console.log('Danger');
+      led.blink(1, 5);
+       setTimeout(function(){
+poptka();
+       }, 30000);
+ //     console.log(time);
+     ///сonsole.log("не тут");
+    
+    } else {
+  //    сonsole.log("я не тут");
+      if (yesy == 1){
+        
+        }else{
+          console.log("time - "+time);
+           
+          protechka();
+         
+                setTimeout(function(){    
+    time = time + 1;
+                         }, 1000);
+      }
+
+    }
+  };
+
+var protechka = function(){
+
+}; 
+var check = function() {
+  // выключаем насос
+
+};
+ var poptka = function () {
+  while (i == 1000);
+    if ( time1 > srok1){
+      if (myButton.on =='press') {
+  //break;
+}
+                  pump.turnOff();
+    console.log('Danger Danger');
+      led.blink(0.9, 0.6);
+      buzzer.beep(0.9, 0.6);
+    } else {
+      loe();
+      if (yesy == 1){
+        
+  protechka();
+        
+        }else{
+          console.log("time - "+time1);
+           protechka();
+                setTimeout(function(){    
+    time1 = time1 + 1;
+                         }, 1000);
+      }
+
+    }
+ 
+  
+};
+
+
+
+
+console.log("protechka");
+     setInterval(function() { 
+  // выключаем опрос скорости потока
+if (onTop.read() === 'up') {
+  // включаем устройство
+  //switchOn();
+  print('barrel is full');
+   buzzer.turnOff();    
+ led.turnOff();
+  yesy = 1;
+  time = 0;
+  time1 = 0;
+  console.log("state - " +  yesy);
+}  else if(onTop.read() === 'down'){
+    if(onBottom.read() === 'up'){
+      yesy = 2;
+  print('water is medium');
+      time = 0;
+  time1 = 0;
+    console.log("state - " + yesy);
+    }   
+}
+  else if(onTop.read() === 'up'){
+    if(onBottom.read() === 'down'){
+      console.log("Error gerkon");
+      yesy = 3;
+    }
+}
+  if (onBottom.read() === 'down') {
+  // включаем устройство
+    yesy = 0;
+  logi();
+  print('barrel is empty');
+    //break;
+    
+    console.log("State - "+ yesy);
+}
+
+     }, 1000);
+
+ setInterval(function() {
+var value =  analogRead(A0);
+    //console.log(hyst.on);
+//console.log(value);
+if (value > 0.04){
+console.log("protechka");
+  led.blink(0.7, 0.7);
+  buzzer.beep(0.7, 0.7);
+}
+  }, 780);
+    //console.log(hyst.on);
+//console.log(value);
+
+
